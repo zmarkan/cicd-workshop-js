@@ -8,7 +8,7 @@ jobs:
     parameters: 
       node-version:
         type: string
-        defautl: 15.4
+        default: "15.4"
     docker:
       - image: circleci/node:15.4
     
