@@ -61,14 +61,17 @@ workflows:
     jobs:
       - build-and-test
       - vulnerability-scan
+      - docker-image-build:
+          requires:
+            - build-and-test
+            - vulnerability-scan
       - hold-for-approval:
           type: approval
           requires: 
-            - build-and-test
-            - vulnerability-scan
+            - docker-image-build
           filters:
             branches:
               only: main
-      - deploy-docker:
+      - deploy-docker-heroku:
           requires: 
             - hold-for-approval
