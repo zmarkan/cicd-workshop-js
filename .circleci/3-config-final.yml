@@ -1,0 +1,66 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.1.0
+  heroku: circleci/heroku@1.2.5
+  snyk: snyk/snyk@0.0.13
+  docker: circleci/docker@1.5.0
+
+jobs:
+  build-and-test:
+    parameters: 
+      node-version:
+        type: string
+        default: "14.2"
+    docker:
+      - image: circleci/node:<<parameters.node-version>>
+    steps:
+      - checkout
+      - node/install-packages
+      - snyk/scan
+      - run:
+          command: npm run test-ci
+      - run:
+          name: Copy tests results for storing
+          command: |
+            mkdir ~/test-results
+            cp test-results.xml ~/test-results/
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results
+
+build-docker:
+    executor: docker/machine
+    steps:
+      - checkout
+      - setup_remote_docker
+      - docker/check
+      - docker/build:
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          tag: 0.1.<< pipeline.number >>
+      - snyk/scan:
+          docker-image-name: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+
+workflows:
+  node-test-and-deploy:
+    jobs:
+      - build-and-test:
+          matrix:
+            parameters:
+              node-version: ["13.8", "14.2", "15"]
+      - docker-image-build:
+          requires:
+            - build-and-test
+            - vulnerability-scan
+      - hold-for-approval:
+          type: approval
+          requires: 
+            - docker-image-build
+          filters:
+            branches:
+              only: main
+      - heroku/push-docker-image:
+          requires: 
+            - hold-for-approval
