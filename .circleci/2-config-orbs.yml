@@ -2,18 +2,13 @@ version: 2.1
 
 orbs:
   node: circleci/node@4.1.0
-  heroku: circleci/heroku@1.2.5
   snyk: snyk/snyk@0.0.13
   docker: circleci/docker@1.5.0
 
 jobs:
   build-and-test:
-    parameters:
-      node-version:
-        type: string
-        default: "15.10.0"
     docker:
-      - image: cimg/node:<< parameters.node-version >>
+      - image: cimg/node:15.4
     steps:
       - checkout
       - node/install-packages
@@ -32,7 +27,7 @@ jobs:
   
   dependency-vulnerability-scan:
     docker:
-      - image: cimg/node:15.10.0
+      - image: cimg/node:15.4
     steps:
       - checkout
       - node/install-packages
@@ -54,22 +49,9 @@ jobs:
 workflows:
   node-test-and-deploy:
     jobs:
-      - build-and-test:
-          matrix:
-            parameters:
-              node-version: ["13.8", "14.2", "15.11"]
+      - build-and-test
       - dependency-vulnerability-scan
       - build-docker:
           requires:
             - build-and-test
             - dependency-vulnerability-scan
-      - hold-for-approval:
-          type: approval
-          requires: 
-            - build-docker
-          filters:
-            branches:
-              only: main
-      - heroku/push-docker-image:
-          requires: 
-            - hold-for-approval
