@@ -8,8 +8,12 @@ orbs:
 
 jobs:
   build-and-test:
+    parameters:
+      node-version:
+        type: string
+        default: "15.4"
     docker:
-      - image: cimg/node:15.4
+      - image: cimg/node:<< parameters.node-version >>
     steps:
       - checkout
       - node/install-packages
