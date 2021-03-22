@@ -36,7 +36,8 @@ jobs:
     steps:
       - checkout
       - node/install-packages
-      - snyk/scan
+      - snyk/scan:
+          fail-on-issues: false
 
   build-docker:
     executor: docker/docker
@@ -47,6 +48,9 @@ jobs:
       - docker/build:
           image: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
           tag: 0.1.<< pipeline.number >>
+      - snyk/scan:
+          docker-image-name: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
+          fail-on-issues: false   
       - docker/push:
           image: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
           tag: 0.1.<< pipeline.number >>
@@ -73,14 +77,12 @@ workflows:
             parameters:
               node-version: ["13.8", "14.2", "15.11"]
       - dependency-vulnerability-scan
-      - build-docker:
-          requires:
-            - build-and-test
-            - dependency-vulnerability-scan
+      - build-docker
       - hold-for-approval:
           type: approval
           requires: 
             - build-docker
+            - dependency-vulnerability-scan
           filters:
             branches:
               only: main
