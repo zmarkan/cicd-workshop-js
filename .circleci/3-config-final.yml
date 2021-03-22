@@ -38,10 +38,12 @@ build-docker:
       - setup_remote_docker
       - docker/check
       - docker/build:
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          image: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
           tag: 0.1.<< pipeline.number >>
       - snyk/scan:
-          docker-image-name: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          docker-image-name: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
+      - docker/push:
+          image: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
 
 workflows:
   node-test-and-deploy:
