@@ -11,7 +11,7 @@ jobs:
     parameters:
       node-version:
         type: string
-        default: "15.4"
+        default: "15.10.0"
     docker:
       - image: cimg/node:<< parameters.node-version >>
     steps:
@@ -32,7 +32,7 @@ jobs:
   
   dependency-vulnerability-scan:
     docker:
-      - image: cimg/node:15.4
+      - image: cimg/node:15.10.0
     steps:
       - checkout
       - node/install-packages
@@ -45,12 +45,10 @@ jobs:
       - setup_remote_docker
       - docker/check
       - docker/build:
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          image: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
           tag: 0.1.<< pipeline.number >>
-      - snyk/scan:
-          docker-image-name: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
       - docker/push:
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          image: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
 
 workflows:
   node-test-and-deploy:
