@@ -37,7 +37,7 @@ jobs:
       - checkout
       - node/install-packages
       - snyk/scan:
-          fail-on-issues: false
+          fail-on-issues: true
 
   build-docker:
     executor: docker/docker
@@ -50,7 +50,7 @@ jobs:
           tag: 0.1.<< pipeline.number >>
       - snyk/scan:
           docker-image-name: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
-          fail-on-issues: false   
+          fail-on-issues: false
       - docker/push:
           image: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
           tag: 0.1.<< pipeline.number >>
