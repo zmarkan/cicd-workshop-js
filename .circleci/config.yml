@@ -38,7 +38,7 @@ jobs:
       - node/install-packages
       - snyk/scan
 
-build-docker:
+  build-docker:
     executor: docker/machine
     steps:
       - checkout
@@ -58,7 +58,7 @@ workflows:
       - build-and-test:
           matrix:
             parameters:
-              node-version: ["13.8", "14.2", "15"]
+              node-version: ["13.8", "14.2", "15.11"]
       - dependency-vulnerability-scan
       - build-docker:
           requires:
