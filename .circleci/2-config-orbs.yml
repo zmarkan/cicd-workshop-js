@@ -12,7 +12,6 @@ jobs:
     steps:
       - checkout
       - node/install-packages
-      - snyk/scan
       - run:
           command: npm run test-ci
       - run:
@@ -25,6 +24,14 @@ jobs:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results
+  
+  dependency-vulnerability-scan:
+    docker:
+      - image: cimg/node:15.4
+    steps:
+      - checkout
+      - node/install-packages
+      - snyk/scan
 
   build-docker:
     executor: docker/machine
@@ -37,11 +44,15 @@ jobs:
           tag: 0.1.<< pipeline.number >>
       - snyk/scan:
           docker-image-name: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+      - docker/push:
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
 
 workflows:
   node-test-and-deploy:
     jobs:
       - build-and-test
+      - dependency-vulnerability-scan
       - build-docker:
           requires:
             - build-and-test
+            - dependency-vulnerability-scan
