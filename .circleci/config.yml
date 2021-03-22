@@ -51,6 +51,20 @@ jobs:
           image: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
           tag: 0.1.<< pipeline.number >>
 
+  deploy-to-heroku:
+    executor: heroku/default
+    steps:
+      - setup_remote_docker
+      - heroku/install
+      - heroku/check-authentication
+      - checkout
+      - heroku/push-docker-image:
+          app-name: $HEROKU_APP_NAME  
+          process-types: web
+      - heroku/release-docker-image:
+          app-name: $HEROKU_APP_NAME
+          process-types: web
+
 workflows:
   node-test-and-deploy:
     jobs:
@@ -70,6 +84,6 @@ workflows:
           filters:
             branches:
               only: main
-      - heroku/push-docker-image:
+      - deploy-to-heroku:
           requires: 
             - hold-for-approval

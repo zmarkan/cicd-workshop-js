@@ -57,7 +57,7 @@ jobs:
       - setup_remote_docker
       - heroku/install
       - heroku/check-authentication
-      - heroku/checkout
+      - checkout
       - heroku/push-docker-image:
           app-name: $HEROKU_APP_NAME  
           process-types: web
