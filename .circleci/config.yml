@@ -39,10 +39,10 @@ jobs:
       - snyk/scan
 
   build-docker:
-    executor: docker/machine
+    executor: docker/docker
     steps:
       - checkout
-      - setup_remote_docker
+      - setup-remote-docker
       - docker/check
       - docker/build:
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME

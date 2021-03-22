@@ -39,10 +39,10 @@ jobs:
       - snyk/scan
 
   build-docker:
-    executor: docker/machine
+    executor: docker/docker
     steps:
       - checkout
-      - setup_remote_docker
+      - setup-remote-docker
       - docker/check
       - docker/build:
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
@@ -58,7 +58,7 @@ workflows:
       - build-and-test:
           matrix:
             parameters:
-              node-version: ["13.8", "14.2", "15"]
+              node-version: ["13.8", "14.2", "15.11"]
       - dependency-vulnerability-scan
       - build-docker:
           requires:
