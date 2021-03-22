@@ -37,7 +37,7 @@ jobs:
 workflows:
   node-test-and-deploy:
     jobs:
-      - build-and-test:
+      - build-and-test
       - docker-image-build:
           requires:
             - build-and-test
