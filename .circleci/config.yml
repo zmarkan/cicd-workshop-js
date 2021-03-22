@@ -49,6 +49,7 @@ jobs:
           tag: 0.1.<< pipeline.number >>
       - docker/push:
           image: $DOCKER_LOGIN/$CIRCLE_PROJECT_REPONAME
+          tag: 0.1.<< pipeline.number >>
 
 workflows:
   node-test-and-deploy:
