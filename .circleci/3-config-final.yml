@@ -52,7 +52,7 @@ jobs:
           tag: 0.1.<< pipeline.number >>
 
   deploy-to-heroku:
-    executor: heroku:default
+    executor: docker:machine
     steps:
       - setup_remote_docker
       - heroku/install
