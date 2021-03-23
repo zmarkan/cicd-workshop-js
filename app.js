@@ -6,7 +6,7 @@ var content = ""
 let PORT = process.env.PORT || 5000
 
 function welcomeMessage(){
-    var message = "Welcome to the DevOps.JS CircleCI Workshop!";
+    var message = "Welcome to TechStars Workshop!";
     return message;
 }
 
